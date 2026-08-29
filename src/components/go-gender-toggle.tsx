@@ -1,6 +1,7 @@
 "use client";
 
 import { setGoGender, type GoGenderValue } from "@/app/go/actions";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { useTransition } from "react";
 import {
   Tooltip,
@@ -84,11 +85,16 @@ export function GoGenderToggle({
 }: GoGenderToggleProps) {
   const [isPending, startTransition] = useTransition();
   const variant = getVariant(genderRate);
+  const pinGate = usePinGate();
 
   const handleSet = (next: GoGenderValue | null) => {
     startTransition(async () => {
-      await setGoGender(pokemonNationalDex, next, userId);
-      onChange(next);
+      try {
+        await setGoGender(pokemonNationalDex, next, userId);
+        onChange(next);
+      } catch (err) {
+        pinGate(err);
+      }
     });
   };
 

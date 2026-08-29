@@ -2,6 +2,7 @@
 
 import { Switch } from "@/components/ui/switch";
 import { toggleGoCheck } from "@/app/go/actions";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { useTransition, useState } from "react";
 import { ArrowUpDown, AlertTriangle, Check, type LucideIcon } from "lucide-react";
 import {
@@ -81,14 +82,19 @@ export function GoCheckToggle({
 }: GoCheckToggleProps) {
   const [isPending, startTransition] = useTransition();
   const [contextOpen, setContextOpen] = useState(false);
+  const pinGate = usePinGate();
 
   const isShinyCheck = checkName === "isShiny";
   const isOverride = isShinyCheck && shinyOverride === true;
 
   const handleToggle = async (value: boolean) => {
     startTransition(async () => {
-      await toggleGoCheck(pokemonNationalDex, checkName, value, userId);
-      onToggle(checkName, value);
+      try {
+        await toggleGoCheck(pokemonNationalDex, checkName, value, userId);
+        onToggle(checkName, value);
+      } catch (err) {
+        pinGate(err);
+      }
     });
   };
 

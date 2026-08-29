@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 import { resolveUserId } from "@/lib/profile";
 import { formatAbilityName, type AbilityRow } from "./types";
 
@@ -55,6 +56,7 @@ export async function toggleRegisteredAbility(
   value: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
 
   if (value) {

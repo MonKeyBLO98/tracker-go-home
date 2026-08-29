@@ -9,10 +9,12 @@ import { getMiniDex, getMiniDexGames } from "./actions";
 import { toggleHomeGameOrigin } from "../home/actions";
 import type { MiniDexEntry, MiniDexGame } from "./types";
 import { useAppStore } from "@/stores/app-store";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { LayoutGrid } from "lucide-react";
 
 export default function MiniDexPage() {
   const activeProfileId = useAppStore((s) => s.activeProfileId);
+  const pinGate = usePinGate();
   const [games, setGames] = useState<MiniDexGame[]>([]);
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [entries, setEntries] = useState<MiniDexEntry[]>([]);
@@ -88,7 +90,11 @@ export default function MiniDexPage() {
           : e
       )
     );
-    await toggleHomeGameOrigin(entry.nationalDex, activeGame, value, activeProfileId);
+    try {
+      await toggleHomeGameOrigin(entry.nationalDex, activeGame, value, activeProfileId);
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   return (

@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 import { SCRAPERS } from "@/lib/scrapers";
 import { setSetting as persistSetting } from "@/lib/app-settings";
 import { runScraper } from "@/lib/scraper-runner";
@@ -9,6 +10,7 @@ import type { ProfileRow, ScrapingFrequency, ScrapingStatus } from "./types";
 const FREQUENCIES: ScrapingFrequency[] = ["24h", "1week", "manual"];
 
 export async function setSetting(key: string, value: string) {
+  await requireAuth();
   return persistSetting(key, value);
 }
 
@@ -40,6 +42,7 @@ export async function getProfiles(): Promise<ProfileRow[]> {
 }
 
 export async function createProfile(profileName: string): Promise<ProfileRow> {
+  await requireAuth();
   const name = profileName.trim();
   if (!name) throw new Error("El nombre del perfil no puede estar vacío");
   if (name.length > 50) throw new Error("El nombre es demasiado largo (máx. 50)");
@@ -61,6 +64,7 @@ export async function createProfile(profileName: string): Promise<ProfileRow> {
 }
 
 export async function deleteProfile(userId: number) {
+  await requireAuth();
   const total = await prisma.user.count();
   if (total <= 1) {
     throw new Error("Debe existir al menos un perfil");
@@ -140,5 +144,6 @@ export async function getScrapingStatus(): Promise<ScrapingStatus> {
 }
 
 export async function runScraperNow(key: string) {
+  await requireAuth();
   return runScraper(key);
 }

@@ -62,6 +62,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { formatDexNumber, formatPokemonName, POKEMON_TYPE_COLORS } from "@/lib/pokemon-types";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { useAppStore } from "@/stores/app-store";
 
 function GenderInfo({ genderRate }: { genderRate: number | null }) {
@@ -97,6 +98,7 @@ function GenderInfo({ genderRate }: { genderRate: number | null }) {
 
 export default function HomePage() {
   const activeProfileId = useAppStore((s) => s.activeProfileId);
+  const pinGate = usePinGate();
   const [entries, setEntries] = useState<PokemonHomeRow[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -202,21 +204,33 @@ export default function HomePage() {
   }, [activeProfileId]);
 
   const handleToggleRegistered = async (pokemonNationalDex: number, registered: boolean) => {
-    await toggleHomeRegistered(pokemonNationalDex, registered, activeProfileId);
-    fetchEntries();
-    fetchStats();
-    fetchGameProgress();
+    try {
+      await toggleHomeRegistered(pokemonNationalDex, registered, activeProfileId);
+      fetchEntries();
+      fetchStats();
+      fetchGameProgress();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleLanguage = async (pokemonNationalDex: number, languageCode: string, value: boolean) => {
-    await toggleHomeLanguage(pokemonNationalDex, languageCode, value, activeProfileId);
-    fetchEntries();
+    try {
+      await toggleHomeLanguage(pokemonNationalDex, languageCode, value, activeProfileId);
+      fetchEntries();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleGameOrigin = async (pokemonNationalDex: number, gameKey: string, value: boolean) => {
-    await toggleHomeGameOrigin(pokemonNationalDex, gameKey, value, activeProfileId);
-    fetchEntries();
-    fetchGameProgress();
+    try {
+      await toggleHomeGameOrigin(pokemonNationalDex, gameKey, value, activeProfileId);
+      fetchEntries();
+      fetchGameProgress();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleAbility = async (abilityName: string, value: boolean) => {
@@ -229,28 +243,48 @@ export default function HomePage() {
       }
       return next;
     });
-    await toggleRegisteredAbility(abilityName, value, activeProfileId);
+    try {
+      await toggleRegisteredAbility(abilityName, value, activeProfileId);
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleFormRegistered = async (formId: number, registered: boolean) => {
-    await toggleHomeFormRegistered(formId, registered, activeProfileId);
-    fetchEntries();
+    try {
+      await toggleHomeFormRegistered(formId, registered, activeProfileId);
+      fetchEntries();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleFormAbility = async (formId: number, abilityName: string, registered: boolean) => {
-    await toggleHomeFormAbility(formId, abilityName, registered, activeProfileId);
-    fetchEntries();
+    try {
+      await toggleHomeFormAbility(formId, abilityName, registered, activeProfileId);
+      fetchEntries();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleFormShiny = async (formId: number, isShiny: boolean) => {
-    await toggleHomeFormShiny(formId, isShiny, activeProfileId);
-    fetchEntries();
+    try {
+      await toggleHomeFormShiny(formId, isShiny, activeProfileId);
+      fetchEntries();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleToggleShiny = async (pokemonNationalDex: number, isShiny: boolean) => {
-    await toggleHomeShiny(pokemonNationalDex, isShiny, activeProfileId);
-    fetchEntries();
-    fetchStats();
+    try {
+      await toggleHomeShiny(pokemonNationalDex, isShiny, activeProfileId);
+      fetchEntries();
+      fetchStats();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const toggleFormExpanded = (pokemonId: number) => {

@@ -456,7 +456,8 @@ export type SpriteCacheScalarFieldEnum = (typeof SpriteCacheScalarFieldEnum)[key
 export const UserScalarFieldEnum = {
   id: 'id',
   profileName: 'profileName',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  pin: 'pin'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

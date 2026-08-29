@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, User, Settings, DatabaseBackup } from "lucide-react";
+import { Sparkles, User, Settings, DatabaseBackup, Lock, LockOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +14,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppStore } from "@/stores/app-store";
+import { useAuthStore } from "@/stores/auth-store";
+import { getAuthState } from "@/app/auth/actions";
 
 export function Header() {
   const activeProfileName = useAppStore((s) => s.activeProfileName);
+  const setOpen = useAuthStore((s) => s.setOpen);
+  const [authenticated, setAuthenticated] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const state = await getAuthState();
+      if (!active) return;
+      setAuthenticated(state.authenticated);
+      setMounted(true);
+    };
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4">
@@ -24,7 +44,7 @@ export function Header() {
         <div>
           <h1 className="text-lg font-bold">TrackerGoHome</h1>
           <p className="text-xs text-muted-foreground">
-            Pokémon GO & Home Tracker
+            PokǸmon GO & Home Tracker
           </p>
         </div>
       </div>
@@ -34,6 +54,18 @@ export function Header() {
           <User className="h-3 w-3" />
           {activeProfileName ?? "Perfil"}
         </Badge>
+        <Button
+          variant={authenticated ? "ghost" : "outline"}
+          size="icon-sm"
+          onClick={() => setOpen(true)}
+          title={mounted ? (authenticated ? "Edición desbloqueada" : "Edición bloqueada") : "..."}
+        >
+          {mounted && authenticated ? (
+            <LockOpen className="h-4 w-4" />
+          ) : (
+            <Lock className="h-4 w-4" />
+          )}
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger className="h-9 w-9 p-0">
             <User className="h-4 w-4" />

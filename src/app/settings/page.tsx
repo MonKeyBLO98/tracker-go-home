@@ -37,6 +37,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { useAppStore } from "@/stores/app-store";
 import {
   getProfiles,
@@ -67,6 +68,7 @@ export default function SettingsPage() {
   const activeProfileId = useAppStore((s) => s.activeProfileId);
   const setActiveProfile = useAppStore((s) => s.setActiveProfile);
   const setStoreFrequency = useAppStore((s) => s.setScrapingFrequency);
+  const pinGate = usePinGate();
 
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
@@ -134,6 +136,7 @@ export default function SettingsPage() {
       setProfiles(await getProfiles());
       toast.success(`Perfil "${created.profileName}" creado`);
     } catch (error) {
+      if (pinGate(error)) return;
       toast.error(error instanceof Error ? error.message : "Error al crear el perfil");
     } finally {
       setCreating(false);
@@ -151,6 +154,7 @@ export default function SettingsPage() {
       setProfiles(await getProfiles());
       toast.success(`Perfil "${profileToDelete.profileName}" eliminado`);
     } catch (error) {
+      if (pinGate(error)) return;
       toast.error(error instanceof Error ? error.message : "Error al eliminar el perfil");
     } finally {
       setDeleting(false);
@@ -164,7 +168,8 @@ export default function SettingsPage() {
     try {
       await setSetting("scraping.frequency", freq);
       toast.success(`Frecuencia: ${FREQUENCY_LABELS[freq]}`);
-    } catch {
+    } catch (error) {
+      if (pinGate(error)) return;
       toast.error("No se pudo guardar la frecuencia");
     }
   };
@@ -176,6 +181,7 @@ export default function SettingsPage() {
       setScraping(await getScrapingStatus());
       toast.success("Scraping completado");
     } catch (error) {
+      if (pinGate(error)) return;
       toast.error(error instanceof Error ? error.message : "Error durante el scraping");
     } finally {
       setRunningKey(null);

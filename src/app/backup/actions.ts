@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 import type { Prisma } from "@/generated/prisma/client";
 import {
   type BackupFile,
@@ -18,6 +19,7 @@ function backupFilename(profileName: string): string {
 }
 
 export async function exportBackup(userId: number): Promise<{ data: BackupFile; filename: string }> {
+  await requireAuth();
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("Perfil no encontrado");
 
@@ -135,6 +137,7 @@ export async function previewBackup(jsonString: string): Promise<BackupPreview> 
 }
 
 export async function importBackup(userId: number, jsonString: string): Promise<ImportResult> {
+  await requireAuth();
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("Perfil no encontrado");
 

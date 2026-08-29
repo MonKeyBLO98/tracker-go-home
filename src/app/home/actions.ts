@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 import { resolveUserId } from "@/lib/profile";
 import { formatAbilityName } from "@/app/abilities/types";
 import { HOME_LANGUAGES } from "./types";
@@ -228,6 +229,7 @@ export async function toggleHomeRegistered(
   registered: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -258,6 +260,7 @@ export async function toggleHomeFormRegistered(
   registered: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const form = await prisma.pokemonForm.findUnique({
     where: { id: formId },
@@ -289,6 +292,7 @@ export async function toggleHomeFormAbility(
   registered: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const form = await prisma.pokemonForm.findUnique({
     where: { id: formId },
@@ -327,6 +331,7 @@ export async function toggleHomeShiny(
   isShiny: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -357,6 +362,7 @@ export async function toggleHomeFormShiny(
   isShiny: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const form = await prisma.pokemonForm.findUnique({
     where: { id: formId },
@@ -388,6 +394,7 @@ export async function toggleHomeLanguage(
   value: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -426,6 +433,7 @@ export async function toggleHomeGameOrigin(
   value: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },

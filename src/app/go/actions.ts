@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 import { resolveUserId } from "@/lib/profile";
 import { resolveCheckEligibility } from "@/lib/check-eligibility";
 import { getGoReferenceTotals } from "@/lib/reference-cache";
@@ -257,6 +258,7 @@ export async function toggleGoCheck(
   value: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -302,6 +304,7 @@ export async function toggleGoShinyOverride(
   shinyOverride: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -351,6 +354,7 @@ export async function setGoGender(
   value: GoGenderValue | null,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -388,6 +392,7 @@ export async function toggleCaptured(
   captured: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -427,6 +432,7 @@ export async function toggleGoCostume(
   registered: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -487,6 +493,7 @@ export async function updateGoStats(
   },
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
   const pokemon = await prisma.pokemon.findUnique({
     where: { nationalDex: pokemonNationalDex },
@@ -614,6 +621,7 @@ export async function toggleGoFormCaptured(
   captured: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
 
   const existing = await prisma.goFormEntry.findUnique({
@@ -639,6 +647,7 @@ export async function toggleGoFormShiny(
   isShiny: boolean,
   userId?: number | null
 ) {
+  await requireAuth();
   const uid = await resolveUserId(userId);
 
   const existing = await prisma.goFormEntry.findUnique({

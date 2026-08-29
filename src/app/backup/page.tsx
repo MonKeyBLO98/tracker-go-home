@@ -29,6 +29,7 @@ import {
   FileJson,
 } from "lucide-react";
 import { useAppStore } from "@/stores/app-store";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { getProfiles } from "@/app/settings/actions";
 import type { ProfileRow } from "@/app/settings/types";
 import { exportBackup, previewBackup, importBackup, getBackupHistory } from "./actions";
@@ -43,6 +44,7 @@ function formatDate(iso: string | null | undefined): string {
 
 export default function BackupPage() {
   const activeProfileId = useAppStore((s) => s.activeProfileId);
+  const pinGate = usePinGate();
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
@@ -108,6 +110,7 @@ export default function BackupPage() {
       toast.success(`Backup descargado (${data.go.length} GO · ${data.home.length} HOME)`);
       setHistory(await getBackupHistory());
     } catch (error) {
+      if (pinGate(error)) return;
       toast.error(error instanceof Error ? error.message : "Error al exportar");
     } finally {
       setExporting(false);
@@ -137,6 +140,7 @@ export default function BackupPage() {
       setPendingJson(null);
       setHistory(await getBackupHistory());
     } catch (error) {
+      if (pinGate(error)) return;
       toast.error(error instanceof Error ? error.message : "Error al importar");
     } finally {
       setImporting(false);

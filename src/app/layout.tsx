@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Sidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
+import { PinModal } from "@/components/pin-modal";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
               </div>
             </div>
           </TooltipProvider>
+          <PinModal />
           <Toaster />
         </ThemeProvider>
       </body>

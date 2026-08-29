@@ -38,18 +38,21 @@ export type UserMinAggregateOutputType = {
   id: number | null
   profileName: string | null
   createdAt: Date | null
+  pin: string | null
 }
 
 export type UserMaxAggregateOutputType = {
   id: number | null
   profileName: string | null
   createdAt: Date | null
+  pin: string | null
 }
 
 export type UserCountAggregateOutputType = {
   id: number
   profileName: number
   createdAt: number
+  pin: number
   _all: number
 }
 
@@ -66,18 +69,21 @@ export type UserMinAggregateInputType = {
   id?: true
   profileName?: true
   createdAt?: true
+  pin?: true
 }
 
 export type UserMaxAggregateInputType = {
   id?: true
   profileName?: true
   createdAt?: true
+  pin?: true
 }
 
 export type UserCountAggregateInputType = {
   id?: true
   profileName?: true
   createdAt?: true
+  pin?: true
   _all?: true
 }
 
@@ -171,6 +177,7 @@ export type UserGroupByOutputType = {
   id: number
   profileName: string
   createdAt: Date
+  pin: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -200,6 +207,7 @@ export type UserWhereInput = {
   id?: Prisma.IntFilter<"User"> | number
   profileName?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  pin?: Prisma.StringNullableFilter<"User"> | string | null
   settings?: Prisma.AppSettingListRelationFilter
   backups?: Prisma.BackupLogListRelationFilter
   goEntries?: Prisma.GoEntryListRelationFilter
@@ -215,6 +223,7 @@ export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   profileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  pin?: Prisma.SortOrderInput | Prisma.SortOrder
   settings?: Prisma.AppSettingOrderByRelationAggregateInput
   backups?: Prisma.BackupLogOrderByRelationAggregateInput
   goEntries?: Prisma.GoEntryOrderByRelationAggregateInput
@@ -233,6 +242,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   profileName?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  pin?: Prisma.StringNullableFilter<"User"> | string | null
   settings?: Prisma.AppSettingListRelationFilter
   backups?: Prisma.BackupLogListRelationFilter
   goEntries?: Prisma.GoEntryListRelationFilter
@@ -248,6 +258,7 @@ export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   profileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  pin?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -262,11 +273,13 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
   profileName?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  pin?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -282,6 +295,7 @@ export type UserUncheckedCreateInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -296,6 +310,7 @@ export type UserUncheckedCreateInput = {
 export type UserUpdateInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -311,6 +326,7 @@ export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -326,17 +342,20 @@ export type UserCreateManyInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserScalarRelationFilter = {
@@ -348,6 +367,7 @@ export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   profileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  pin?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -358,12 +378,14 @@ export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   profileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  pin?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   profileName?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  pin?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -499,6 +521,7 @@ export type UserUpdateOneRequiredWithoutBackupsNestedInput = {
 export type UserCreateWithoutGoEntriesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goFormEntries?: Prisma.GoFormEntryCreateNestedManyWithoutUserInput
@@ -513,6 +536,7 @@ export type UserUncheckedCreateWithoutGoEntriesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goFormEntries?: Prisma.GoFormEntryUncheckedCreateNestedManyWithoutUserInput
@@ -542,6 +566,7 @@ export type UserUpdateToOneWithWhereWithoutGoEntriesInput = {
 export type UserUpdateWithoutGoEntriesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goFormEntries?: Prisma.GoFormEntryUpdateManyWithoutUserNestedInput
@@ -556,6 +581,7 @@ export type UserUncheckedUpdateWithoutGoEntriesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goFormEntries?: Prisma.GoFormEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -569,6 +595,7 @@ export type UserUncheckedUpdateWithoutGoEntriesInput = {
 export type UserCreateWithoutGoFormEntriesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -583,6 +610,7 @@ export type UserUncheckedCreateWithoutGoFormEntriesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -612,6 +640,7 @@ export type UserUpdateToOneWithWhereWithoutGoFormEntriesInput = {
 export type UserUpdateWithoutGoFormEntriesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -626,6 +655,7 @@ export type UserUncheckedUpdateWithoutGoFormEntriesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -639,6 +669,7 @@ export type UserUncheckedUpdateWithoutGoFormEntriesInput = {
 export type UserCreateWithoutHomeEntriesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -653,6 +684,7 @@ export type UserUncheckedCreateWithoutHomeEntriesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -682,6 +714,7 @@ export type UserUpdateToOneWithWhereWithoutHomeEntriesInput = {
 export type UserUpdateWithoutHomeEntriesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -696,6 +729,7 @@ export type UserUncheckedUpdateWithoutHomeEntriesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -709,6 +743,7 @@ export type UserUncheckedUpdateWithoutHomeEntriesInput = {
 export type UserCreateWithoutHomeFormEntriesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -723,6 +758,7 @@ export type UserUncheckedCreateWithoutHomeFormEntriesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -752,6 +788,7 @@ export type UserUpdateToOneWithWhereWithoutHomeFormEntriesInput = {
 export type UserUpdateWithoutHomeFormEntriesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -766,6 +803,7 @@ export type UserUncheckedUpdateWithoutHomeFormEntriesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -779,6 +817,7 @@ export type UserUncheckedUpdateWithoutHomeFormEntriesInput = {
 export type UserCreateWithoutHomeFormShinyEntriesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -793,6 +832,7 @@ export type UserUncheckedCreateWithoutHomeFormShinyEntriesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -822,6 +862,7 @@ export type UserUpdateToOneWithWhereWithoutHomeFormShinyEntriesInput = {
 export type UserUpdateWithoutHomeFormShinyEntriesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -836,6 +877,7 @@ export type UserUncheckedUpdateWithoutHomeFormShinyEntriesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -849,6 +891,7 @@ export type UserUncheckedUpdateWithoutHomeFormShinyEntriesInput = {
 export type UserCreateWithoutHomeShinyEntriesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -863,6 +906,7 @@ export type UserUncheckedCreateWithoutHomeShinyEntriesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -892,6 +936,7 @@ export type UserUpdateToOneWithWhereWithoutHomeShinyEntriesInput = {
 export type UserUpdateWithoutHomeShinyEntriesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -906,6 +951,7 @@ export type UserUncheckedUpdateWithoutHomeShinyEntriesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -919,6 +965,7 @@ export type UserUncheckedUpdateWithoutHomeShinyEntriesInput = {
 export type UserCreateWithoutRegisteredAbilitiesInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
@@ -933,6 +980,7 @@ export type UserUncheckedCreateWithoutRegisteredAbilitiesInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
@@ -962,6 +1010,7 @@ export type UserUpdateToOneWithWhereWithoutRegisteredAbilitiesInput = {
 export type UserUpdateWithoutRegisteredAbilitiesInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
@@ -976,6 +1025,7 @@ export type UserUncheckedUpdateWithoutRegisteredAbilitiesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -989,6 +1039,7 @@ export type UserUncheckedUpdateWithoutRegisteredAbilitiesInput = {
 export type UserCreateWithoutSettingsInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   backups?: Prisma.BackupLogCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
   goFormEntries?: Prisma.GoFormEntryCreateNestedManyWithoutUserInput
@@ -1003,6 +1054,7 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   backups?: Prisma.BackupLogUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
   goFormEntries?: Prisma.GoFormEntryUncheckedCreateNestedManyWithoutUserInput
@@ -1032,6 +1084,7 @@ export type UserUpdateToOneWithWhereWithoutSettingsInput = {
 export type UserUpdateWithoutSettingsInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backups?: Prisma.BackupLogUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
   goFormEntries?: Prisma.GoFormEntryUpdateManyWithoutUserNestedInput
@@ -1046,6 +1099,7 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   backups?: Prisma.BackupLogUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
   goFormEntries?: Prisma.GoFormEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -1059,6 +1113,7 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
 export type UserCreateWithoutBackupsInput = {
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryCreateNestedManyWithoutUserInput
   goFormEntries?: Prisma.GoFormEntryCreateNestedManyWithoutUserInput
@@ -1073,6 +1128,7 @@ export type UserUncheckedCreateWithoutBackupsInput = {
   id?: number
   profileName: string
   createdAt?: Date | string
+  pin?: string | null
   settings?: Prisma.AppSettingUncheckedCreateNestedManyWithoutUserInput
   goEntries?: Prisma.GoEntryUncheckedCreateNestedManyWithoutUserInput
   goFormEntries?: Prisma.GoFormEntryUncheckedCreateNestedManyWithoutUserInput
@@ -1102,6 +1158,7 @@ export type UserUpdateToOneWithWhereWithoutBackupsInput = {
 export type UserUpdateWithoutBackupsInput = {
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUpdateManyWithoutUserNestedInput
   goFormEntries?: Prisma.GoFormEntryUpdateManyWithoutUserNestedInput
@@ -1116,6 +1173,7 @@ export type UserUncheckedUpdateWithoutBackupsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   profileName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   settings?: Prisma.AppSettingUncheckedUpdateManyWithoutUserNestedInput
   goEntries?: Prisma.GoEntryUncheckedUpdateManyWithoutUserNestedInput
   goFormEntries?: Prisma.GoFormEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -1233,6 +1291,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   profileName?: boolean
   createdAt?: boolean
+  pin?: boolean
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   backups?: boolean | Prisma.User$backupsArgs<ExtArgs>
   goEntries?: boolean | Prisma.User$goEntriesArgs<ExtArgs>
@@ -1249,21 +1308,24 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   profileName?: boolean
   createdAt?: boolean
+  pin?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   profileName?: boolean
   createdAt?: boolean
+  pin?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
   id?: boolean
   profileName?: boolean
   createdAt?: boolean
+  pin?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "profileName" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "profileName" | "createdAt" | "pin", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   backups?: boolean | Prisma.User$backupsArgs<ExtArgs>
@@ -1296,6 +1358,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: number
     profileName: string
     createdAt: Date
+    pin: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1731,6 +1794,7 @@ export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
   readonly profileName: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly pin: Prisma.FieldRef<"User", 'String'>
 }
     
 

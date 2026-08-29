@@ -24,10 +24,12 @@ import {
 import { getAbilities, toggleRegisteredAbility } from "./actions";
 import { formatAbilityName, type AbilityRow } from "./types";
 import { Search, Filter, ListChecks } from "lucide-react";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { useAppStore } from "@/stores/app-store";
 
 export default function AbilitiesPage() {
   const activeProfileId = useAppStore((s) => s.activeProfileId);
+  const pinGate = usePinGate();
   const [abilities, setAbilities] = useState<AbilityRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -87,7 +89,11 @@ export default function AbilitiesPage() {
         a.abilityName === abilityName ? { ...a, isRegistered: value } : a
       )
     );
-    await toggleRegisteredAbility(abilityName, value, activeProfileId);
+    try {
+      await toggleRegisteredAbility(abilityName, value, activeProfileId);
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   return (

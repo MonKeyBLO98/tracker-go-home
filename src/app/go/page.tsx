@@ -55,10 +55,12 @@ import {
 import { formatDexNumber, formatPokemonName, POKEMON_TYPE_COLORS } from "@/lib/pokemon-types";
 import { resolveCheckEligibility } from "@/lib/check-eligibility";
 import { toggleHomeRegistered, toggleHomeGameOrigin, toggleHomeFormRegistered } from "@/app/home/actions";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { useAppStore } from "@/stores/app-store";
 
 export default function GoPage() {
   const activeProfileId = useAppStore((s) => s.activeProfileId);
+  const pinGate = usePinGate();
   const [entries, setEntries] = useState<PokemonGoRow[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -116,9 +118,13 @@ export default function GoPage() {
   }, [fetchStats]);
 
   const handleToggleCaptured = async (pokemonNationalDex: number, captured: boolean) => {
-    await toggleCaptured(pokemonNationalDex, captured, activeProfileId);
-    fetchEntries();
-    fetchStats();
+    try {
+      await toggleCaptured(pokemonNationalDex, captured, activeProfileId);
+      fetchEntries();
+      fetchStats();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleCheckToggle = (pokemonId: number, checkName: string, value: boolean) => {
@@ -140,56 +146,68 @@ export default function GoPage() {
   };
 
   const handleShinyOverride = async (pokemonNationalDex: number, shinyOverride: boolean) => {
-    await toggleGoShinyOverride(pokemonNationalDex, shinyOverride, activeProfileId);
-    setEntries((prev) =>
-      prev.map((e) => {
-        if (e.nationalDex === pokemonNationalDex && e.checks) {
-          return {
-            ...e,
-            checks: { ...e.checks, isShiny: true, shinyOverride },
-          };
-        }
-        return e;
-      })
-    );
+    try {
+      await toggleGoShinyOverride(pokemonNationalDex, shinyOverride, activeProfileId);
+      setEntries((prev) =>
+        prev.map((e) => {
+          if (e.nationalDex === pokemonNationalDex && e.checks) {
+            return {
+              ...e,
+              checks: { ...e.checks, isShiny: true, shinyOverride },
+            };
+          }
+          return e;
+        })
+      );
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleFormCaptured = async (pokemonId: number, formId: number, captured: boolean) => {
-    await toggleGoFormCaptured(formId, captured, activeProfileId);
-    setEntries((prev) =>
-      prev.map((e) => {
-        if (e.pokemonId === pokemonId) {
-          return {
-            ...e,
-            regionalForms: e.regionalForms.map((rf) =>
-              rf.formId === formId
-                ? { ...rf, isCaptured: captured, capturedAt: captured ? new Date() : null }
-                : rf
-            ),
-          };
-        }
-        return e;
-      })
-    );
-    fetchStats();
+    try {
+      await toggleGoFormCaptured(formId, captured, activeProfileId);
+      setEntries((prev) =>
+        prev.map((e) => {
+          if (e.pokemonId === pokemonId) {
+            return {
+              ...e,
+              regionalForms: e.regionalForms.map((rf) =>
+                rf.formId === formId
+                  ? { ...rf, isCaptured: captured, capturedAt: captured ? new Date() : null }
+                  : rf
+              ),
+            };
+          }
+          return e;
+        })
+      );
+      fetchStats();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleFormShiny = async (pokemonId: number, formId: number, isShiny: boolean) => {
-    await toggleGoFormShiny(formId, isShiny, activeProfileId);
-    setEntries((prev) =>
-      prev.map((e) => {
-        if (e.pokemonId === pokemonId) {
-          return {
-            ...e,
-            regionalForms: e.regionalForms.map((rf) =>
-              rf.formId === formId ? { ...rf, isShiny } : rf
-            ),
-          };
-        }
-        return e;
-      })
-    );
-    fetchStats();
+    try {
+      await toggleGoFormShiny(formId, isShiny, activeProfileId);
+      setEntries((prev) =>
+        prev.map((e) => {
+          if (e.pokemonId === pokemonId) {
+            return {
+              ...e,
+              regionalForms: e.regionalForms.map((rf) =>
+                rf.formId === formId ? { ...rf, isShiny } : rf
+              ),
+            };
+          }
+          return e;
+        })
+      );
+      fetchStats();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleGenderChange = (pokemonId: number, value: GoGenderValue | null) => {
@@ -201,68 +219,84 @@ export default function GoPage() {
   };
 
   const handleCostumeToggle = async (pokemonId: number, nationalDex: number, costumeName: string, registered: boolean) => {
-    await toggleGoCostume(nationalDex, costumeName, registered, activeProfileId);
-    setEntries((prev) =>
-      prev.map((e) => {
-        if (e.pokemonId === pokemonId) {
-          const newCostumes = registered
-            ? [...e.costumes, { costumeName }]
-            : e.costumes.filter((c) => c.costumeName !== costumeName);
-          return {
-            ...e,
-            isCaptured: true,
-            costumes: newCostumes,
-            checks: e.checks
-              ? { ...e.checks, hasCostume: newCostumes.length > 0 }
-              : { isShiny: false, shinyOverride: false, isLucky: false, isHundo: false, isXXL: false, isXXS: false, isGmax: false, isMegaX: false, isMegaY: false, isShadow: false, isPurified: false, hasCostume: newCostumes.length > 0 },
-          };
-        }
-        return e;
-      })
-    );
-    fetchStats();
+    try {
+      await toggleGoCostume(nationalDex, costumeName, registered, activeProfileId);
+      setEntries((prev) =>
+        prev.map((e) => {
+          if (e.pokemonId === pokemonId) {
+            const newCostumes = registered
+              ? [...e.costumes, { costumeName }]
+              : e.costumes.filter((c) => c.costumeName !== costumeName);
+            return {
+              ...e,
+              isCaptured: true,
+              costumes: newCostumes,
+              checks: e.checks
+                ? { ...e.checks, hasCostume: newCostumes.length > 0 }
+                : { isShiny: false, shinyOverride: false, isLucky: false, isHundo: false, isXXL: false, isXXS: false, isGmax: false, isMegaX: false, isMegaY: false, isShadow: false, isPurified: false, hasCostume: newCostumes.length > 0 },
+            };
+          }
+          return e;
+        })
+      );
+      fetchStats();
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleHomeToggle = async (pokemonId: number, nationalDex: number, registered: boolean) => {
-    await toggleHomeRegistered(nationalDex, registered, activeProfileId);
-    if (!registered) {
-      // Cascada: desregistrar HOME también quita el origen GO
-      await toggleHomeGameOrigin(nationalDex, "go", false, activeProfileId);
+    try {
+      await toggleHomeRegistered(nationalDex, registered, activeProfileId);
+      if (!registered) {
+        // Cascada: desregistrar HOME también quita el origen GO
+        await toggleHomeGameOrigin(nationalDex, "go", false, activeProfileId);
+      }
+      setEntries((prev) =>
+        prev.map((e) =>
+          e.pokemonId === pokemonId
+            ? { ...e, isHomeRegistered: registered, isGoHome: registered ? e.isGoHome : false }
+            : e
+        )
+      );
+    } catch (err) {
+      pinGate(err);
     }
-    setEntries((prev) =>
-      prev.map((e) =>
-        e.pokemonId === pokemonId
-          ? { ...e, isHomeRegistered: registered, isGoHome: registered ? e.isGoHome : false }
-          : e
-      )
-    );
   };
 
   const handleGoHomeToggle = async (pokemonId: number, nationalDex: number, value: boolean) => {
-    await toggleHomeGameOrigin(nationalDex, "go", value, activeProfileId);
-    setEntries((prev) =>
-      prev.map((e) =>
-        e.pokemonId === pokemonId
-          ? { ...e, isGoHome: value, isHomeRegistered: value ? true : e.isHomeRegistered }
-          : e
-      )
-    );
+    try {
+      await toggleHomeGameOrigin(nationalDex, "go", value, activeProfileId);
+      setEntries((prev) =>
+        prev.map((e) =>
+          e.pokemonId === pokemonId
+            ? { ...e, isGoHome: value, isHomeRegistered: value ? true : e.isHomeRegistered }
+            : e
+        )
+      );
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const handleFormHomeToggle = async (pokemonId: number, formId: number, registered: boolean) => {
-    await toggleHomeFormRegistered(formId, registered, activeProfileId);
-    setEntries((prev) =>
-      prev.map((e) =>
-        e.pokemonId === pokemonId
-          ? {
-              ...e,
-              regionalForms: e.regionalForms.map((rf) =>
-                rf.formId === formId ? { ...rf, isHomeRegistered: registered } : rf
-              ),
-            }
-          : e
-      )
-    );
+    try {
+      await toggleHomeFormRegistered(formId, registered, activeProfileId);
+      setEntries((prev) =>
+        prev.map((e) =>
+          e.pokemonId === pokemonId
+            ? {
+                ...e,
+                regionalForms: e.regionalForms.map((rf) =>
+                  rf.formId === formId ? { ...rf, isHomeRegistered: registered } : rf
+                ),
+              }
+            : e
+        )
+      );
+    } catch (err) {
+      pinGate(err);
+    }
   };
 
   const statRings = stats

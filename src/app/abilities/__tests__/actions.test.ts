@@ -23,6 +23,9 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 import { prisma } from "@/lib/prisma";
+vi.mock("@/lib/auth", () => ({
+  requireAuth: vi.fn().mockResolvedValue(undefined),
+}));
 import {
   getAbilities,
   getRegisteredAbilityNames,

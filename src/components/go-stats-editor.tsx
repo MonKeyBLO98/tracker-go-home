@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { updateGoStats } from "@/app/go/actions";
+import { usePinGate } from "@/lib/pin-gate-client";
 import { Save, X } from "lucide-react";
 
 export interface GoStatsValues {
@@ -35,6 +36,7 @@ export function GoStatsEditor({
   onSave,
 }: GoStatsEditorProps) {
   const [isPending, startTransition] = useTransition();
+  const pinGate = usePinGate();
   const [formData, setFormData] = useState({
     cp: stats?.cp?.toString() || "",
     level: stats?.level?.toString() || "",
@@ -58,9 +60,13 @@ export function GoStatsEditor({
         staminaIv: formData.staminaIv ? parseInt(formData.staminaIv) : null,
       };
 
-      await updateGoStats(pokemonNationalDex, newStats, userId);
-      onSave(newStats);
-      onOpenChange(false);
+      try {
+        await updateGoStats(pokemonNationalDex, newStats, userId);
+        onSave(newStats);
+        onOpenChange(false);
+      } catch (err) {
+        pinGate(err);
+      }
     });
   };
 
