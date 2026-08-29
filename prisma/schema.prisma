@@ -1,0 +1,481 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ==============================
+// POKÉDEX NACIONAL (datos base)
+// ==============================
+
+model Pokemon {
+  id            Int    @id @default(autoincrement())
+  nationalDex   Int    @unique
+  name          String
+  generation    Int
+  height        Float
+  weight        Float
+  isLegendary   Boolean @default(false)
+  isMythical    Boolean @default(false)
+  spriteUrl     String?
+  officialArtwork String?
+  baseAtk       Float?
+  baseDef       Float?
+  baseSta       Float?
+  genderRate    Int?
+  evoChainId    Int?
+  hasMega       Boolean @default(false)
+  hasGmax       Boolean @default(false)
+  hasShadow     Boolean @default(false)
+
+  types         PokemonType[]
+  abilities     PokemonAbility[]
+  forms         PokemonForm[]
+  goEntries     GoEntry[]
+  homeEntries   HomeEntry[]
+  homeShinyEntries HomeShinyEntry[]
+  homeFormShinyEntries HomeFormShinyEntry[]
+  gameDexEntries HomeGameDex[]
+  attackerRankings  AttackerRanking[]
+  pvpRankings       PvpRanking[]
+  pvpIvRankings     PvpIvRanking[]
+  spriteCache   SpriteCache[]
+}
+
+model PokemonType {
+  id        Int    @id @default(autoincrement())
+  pokemonId Int
+  typeName  String
+  slot      Int
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@unique([pokemonId, slot])
+}
+
+model PokemonAbility {
+  id          Int    @id @default(autoincrement())
+  pokemonId   Int
+  abilityName String
+  isHidden    Boolean @default(false)
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@unique([pokemonId, abilityName])
+}
+
+model PokemonForm {
+  id        Int     @id @default(autoincrement())
+  pokemonId Int
+  formName  String
+  spriteUrl String?
+  isMega    Boolean @default(false)
+  isShadow  Boolean @default(false)
+  isGmax    Boolean @default(false)
+  isCostume Boolean @default(false)
+  isRegional Boolean @default(false)
+
+  pokemon      Pokemon             @relation(fields: [pokemonId], references: [id])
+  homeEntries  HomeFormEntry[]
+  homeShinyEntries HomeFormShinyEntry[]
+  goFormEntries GoFormEntry[]
+  abilities    PokemonFormAbility[]
+  types        PokemonFormType[]
+
+  @@unique([pokemonId, formName])
+}
+
+model PokemonFormType {
+  id        Int     @id @default(autoincrement())
+  formId    Int
+  typeName  String
+  slot      Int
+
+  form PokemonForm @relation(fields: [formId], references: [id])
+
+  @@unique([formId, slot])
+}
+
+model PokemonFormAbility {
+  id          Int     @id @default(autoincrement())
+  formId      Int
+  abilityName String
+  isHidden    Boolean @default(false)
+
+  form PokemonForm @relation(fields: [formId], references: [id])
+
+  @@unique([formId, abilityName])
+}
+
+// ==============================
+// MI POKÉDEX POKÉMON GO
+// ==============================
+
+model GoEntry {
+  id         Int     @id @default(autoincrement())
+  pokemonId  Int
+  userId     Int
+  isCaptured Boolean @default(false)
+  capturedAt DateTime?
+  gender     String?
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  checks  GoCheck?
+  stats   GoStats?
+  costumes GoCostume[]
+
+  @@unique([pokemonId, userId])
+}
+
+model GoCheck {
+  id             Int     @id @default(autoincrement())
+  entryId        Int     @unique
+  isShiny        Boolean @default(false)
+  shinyOverride  Boolean @default(false)
+  isLucky        Boolean @default(false)
+  isHundo        Boolean @default(false)
+  isXXL          Boolean @default(false)
+  isXXS          Boolean @default(false)
+  isGmax         Boolean @default(false)
+  isMegaX        Boolean @default(false)
+  isMegaY        Boolean @default(false)
+  isShadow       Boolean @default(false)
+  isPurified     Boolean @default(false)
+  hasCostume     Boolean @default(false)
+
+  entry GoEntry @relation(fields: [entryId], references: [id])
+}
+
+model GoStats {
+  id         Int     @id @default(autoincrement())
+  entryId    Int     @unique
+  cp         Int?
+  level      Float?
+  attackIv   Int?
+  defenseIv  Int?
+  staminaIv  Int?
+
+  entry GoEntry @relation(fields: [entryId], references: [id])
+}
+
+model GoCostume {
+  id          Int    @id @default(autoincrement())
+  entryId     Int
+  costumeName String
+
+  entry GoEntry @relation(fields: [entryId], references: [id])
+
+  @@unique([entryId, costumeName])
+}
+
+model GoFormEntry {
+  id          Int      @id @default(autoincrement())
+  formId      Int
+  userId      Int
+  isCaptured  Boolean  @default(false)
+  capturedAt  DateTime?
+  isShiny     Boolean  @default(false)
+
+  form PokemonForm @relation(fields: [formId], references: [id])
+  user User       @relation(fields: [userId], references: [id])
+
+  @@unique([formId, userId])
+}
+
+// ==============================
+// MI POKÉDEX POKÉMON HOME
+// ==============================
+
+model HomeEntry {
+  id           Int     @id @default(autoincrement())
+  pokemonId    Int
+  userId       Int
+  isRegistered Boolean @default(false)
+
+  pokemon    Pokemon          @relation(fields: [pokemonId], references: [id])
+  user       User             @relation(fields: [userId], references: [id])
+  languages  HomeLanguage[]
+  abilities  HomeAbility[]
+  gameOrigin HomeGameOrigin[]
+
+  @@unique([pokemonId, userId])
+}
+
+model HomeLanguage {
+  id           Int    @id @default(autoincrement())
+  entryId      Int
+  languageCode String
+
+  entry HomeEntry @relation(fields: [entryId], references: [id])
+
+  @@unique([entryId, languageCode])
+}
+
+model HomeAbility {
+  id          Int    @id @default(autoincrement())
+  entryId     Int
+  abilityName String
+
+  entry HomeEntry @relation(fields: [entryId], references: [id])
+
+  @@unique([entryId, abilityName])
+}
+
+model HomeGameOrigin {
+  id      Int    @id @default(autoincrement())
+  entryId Int
+  gameKey String
+
+  entry HomeEntry @relation(fields: [entryId], references: [id])
+
+  @@unique([entryId, gameKey])
+}
+
+model HomeFormEntry {
+  id          Int     @id @default(autoincrement())
+  formId      Int
+  userId      Int
+  isRegistered Boolean @default(false)
+
+  form   PokemonForm @relation(fields: [formId], references: [id])
+  user   User        @relation(fields: [userId], references: [id])
+  abilities HomeFormAbility[]
+
+  @@unique([formId, userId])
+}
+
+model HomeFormAbility {
+  id          Int     @id @default(autoincrement())
+  formEntryId Int
+  abilityName String
+
+  formEntry HomeFormEntry @relation(fields: [formEntryId], references: [id])
+
+  @@unique([formEntryId, abilityName])
+}
+
+model HomeFormShinyEntry {
+  id        Int     @id @default(autoincrement())
+  formId    Int
+  userId    Int
+  isShiny   Boolean @default(false)
+
+  form    PokemonForm @relation(fields: [formId], references: [id])
+  pokemon Pokemon     @relation(fields: [formId], references: [id])
+  user    User        @relation(fields: [userId], references: [id])
+
+  @@unique([formId, userId])
+}
+
+model HomeShinyEntry {
+  id          Int     @id @default(autoincrement())
+  pokemonId   Int
+  userId      Int
+  isShiny     Boolean @default(false)
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([pokemonId, userId])
+}
+
+model RegisteredAbility {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  abilityName String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, abilityName])
+}
+
+model Ability {
+  id          Int    @id @default(autoincrement())
+  abilityName String @unique
+  nameEs      String
+}
+
+model HomeGameDex {
+  id        Int    @id @default(autoincrement())
+  gameKey   String
+  pokemonId Int
+  dexNumber Int
+  formName  String @default("")
+  spriteUrl String?
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@unique([gameKey, pokemonId, formName])
+}
+
+// ==============================
+// MINI POKÉDEX HOME (13 juegos)
+// ==============================
+
+model HomeGame {
+  id          Int    @id @default(autoincrement())
+  gameKey     String @unique
+  gameName    String
+  totalSpecies Int
+  originGame  String
+  generationRegion String
+}
+
+// ==============================
+// DATOS SCRAPEADOS
+// ==============================
+
+model AttackerRanking {
+  id            Int     @id @default(autoincrement())
+  pokemonId     Int
+  form          String?
+  attackType    String
+  rank          Int
+  tier          String?
+  pokemonName   String
+  fastMove      String
+  fastMoveType  String?
+  chargedMove   String
+  chargedMoveType String?
+  dps           Float
+  tdo           Float
+  edps          Float
+  faints        Float?
+  ttw           String?
+  percentBest   Float
+  source        String
+  lastUpdated   DateTime @default(now())
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+}
+
+model PvpRanking {
+  id              Int     @id @default(autoincrement())
+  pokemonId       Int
+  league          String  // "great", "ultra", "master"
+  rank            Int
+  speciesId       String  // PvPoke speciesId (e.g. "lickilicky")
+  pokemonName     String
+  rating          Int     // raw rating
+  score           Float   // overall score 0-100
+  scoreLeads      Float?
+  scoreClosers    Float?
+  scoreSwitches   Float?
+  scoreChargers   Float?
+  scoreAttackers  Float?
+  scoreConsistency Float?
+  moveset         String  // comma-separated recommended moveset
+  fastMove        String
+  chargedMove1    String
+  chargedMove2    String?
+  editorScore     Float?
+  editorNotes     String?
+  atk             Float?
+  def_            Float?
+  hp              Float?
+  product         Float?
+  source          String
+  lastUpdated     DateTime @default(now())
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+}
+
+model PvpIvRanking {
+  id            Int     @id @default(autoincrement())
+  pokemonId     Int
+  league        String  // "great", "ultra", "master"
+  rank          Int
+  speciesId     String
+  pokemonName   String
+  level         Float
+  attackIv      Int
+  defenseIv     Int
+  staminaIv     Int
+  attack        Float   // calculated attack stat
+  defense       Float   // calculated defense stat
+  hp            Int     // calculated HP
+  cp            Int
+  statProduct   Float
+  percentBest   Float   // % of best stat product for this Pokemon in this league
+  source        String
+  lastUpdated   DateTime @default(now())
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@unique([pokemonId, league, attackIv, defenseIv, staminaIv])
+}
+
+model SpriteCache {
+  id        Int      @id @default(autoincrement())
+  pokemonId Int
+  game      String
+  spriteUrl String
+  cachedAt  DateTime @default(now())
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@unique([pokemonId, game])
+}
+
+// ==============================
+// USUARIO / CONFIG
+// ==============================
+
+model User {
+  id          Int      @id @default(autoincrement())
+  profileName String
+  createdAt   DateTime @default(now())
+
+  settings    AppSetting[]
+  backups     BackupLog[]
+  goEntries   GoEntry[]
+  goFormEntries GoFormEntry[]
+  homeEntries HomeEntry[]
+  homeFormEntries HomeFormEntry[]
+  homeShinyEntries HomeShinyEntry[]
+  homeFormShinyEntries HomeFormShinyEntry[]
+
+  registeredAbilities RegisteredAbility[]
+}
+
+model AppSetting {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  key    String
+  value  String
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, key])
+}
+
+model BackupLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  filename  String
+  action    String   // "create" or "restore"
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Move {
+  id         Int    @id @default(autoincrement())
+  moveId     String @unique
+  name       String
+  type       String
+  category   String // "fast" or "charged"
+  power      Float
+  energy     Float  // energy cost for charged, 0 for fast
+  energyGain Float  // energy gain for fast, 0 for charged
+  cooldown   Int    // ms
+  turns      Int    // for fast moves
+  archetype  String?
+  dps        Float? // power / (cooldown / 1000)
+  dpe        Float? // power / energy (charged only)
+}
