@@ -41,9 +41,9 @@ export function resolveCheckEligibility(
       : false;
     return {
       isShiny: hasShiny,
-      isHundo: hasShiny,
-      isXXL: hasShiny,
-      isXXS: hasShiny,
+      isHundo: false,
+      isXXL: false,
+      isXXS: false,
       isLucky: false,
       isMega: false,
       isGmax: false,

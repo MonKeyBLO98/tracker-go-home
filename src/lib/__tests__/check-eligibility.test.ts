@@ -54,16 +54,16 @@ describe("resolveCheckEligibility", () => {
     expect(mythical.isLucky).toBe(false);
   });
 
-  it("permite shiny/hundo/XXS/XXL para míticos con shiny en GO (ej. Darkrai)", () => {
+  it("solo permite shiny (no hundo/XXS/XXL/mega) para míticos con shiny en GO (ej. Darkrai)", () => {
     const darkrai = resolveCheckEligibility({ isMythical: true, nationalDex: 491 });
     expect(darkrai.isShiny).toBe(true);
-    expect(darkrai.isHundo).toBe(true);
-    expect(darkrai.isXXS).toBe(true);
-    expect(darkrai.isXXL).toBe(true);
-    // Aun así siguen sin poder intercambiarse ni tener megas/gmax/shadow
-    expect(darkrai.isLucky).toBe(false);
+    // Los míticos con shiny en GO solo pueden ser shiny; sus IVs y formas no varían
+    expect(darkrai.isHundo).toBe(false);
+    expect(darkrai.isXXS).toBe(false);
+    expect(darkrai.isXXL).toBe(false);
     expect(darkrai.isMega).toBe(false);
     expect(darkrai.isGmax).toBe(false);
     expect(darkrai.isShadow).toBe(false);
+    expect(darkrai.isLucky).toBe(false);
   });
 });
