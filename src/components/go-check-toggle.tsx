@@ -45,7 +45,7 @@ function GoBadgeIcon({
     return (
       <span
         aria-hidden
-        className="inline-block h-3.5 w-3.5 shrink-0"
+        className="inline-block h-3 w-3 shrink-0"
         style={{
           WebkitMaskImage: `url(${iconSrc})`,
           maskImage: `url(${iconSrc})`,
@@ -126,15 +126,15 @@ export function GoCheckToggle({
     : label;
 
   const toggleContent = (
-    <span className="inline-flex items-center gap-1.5">
+    <span className="inline-flex items-center gap-1">
       <Switch
         checked={checked}
         onCheckedChange={handleToggle}
         disabled={isPending}
-        className={`scale-75 ${effectiveSwitchClass ?? ""}`}
+        className={`scale-[0.6] ${effectiveSwitchClass ?? ""}`}
       />
       <span
-        className={`inline-flex items-center gap-1 text-xs ${checked ? `${effectiveLabelClass ?? "text-primary"} font-medium` : "text-muted-foreground"}`}
+        className={`inline-flex items-center gap-0.5 text-[10px] ${checked ? `${effectiveLabelClass ?? "text-primary"} font-medium` : "text-muted-foreground"}`}
       >
         <GoBadgeIcon
           icon={icon}

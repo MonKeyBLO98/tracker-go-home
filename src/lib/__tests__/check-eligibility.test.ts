@@ -44,4 +44,26 @@ describe("resolveCheckEligibility", () => {
     expect(withShadow.isShadow).toBe(true);
     expect(withShadow.isPurified).toBe(true);
   });
+
+  it("excluye shiny/hundo/XXS/XXL para míticos sin shiny, pero no Lucky", () => {
+    const mythical = resolveCheckEligibility({ isMythical: true, nationalDex: 494 }); // Victini
+    expect(mythical.isShiny).toBe(false);
+    expect(mythical.isHundo).toBe(false);
+    expect(mythical.isXXS).toBe(false);
+    expect(mythical.isXXL).toBe(false);
+    expect(mythical.isLucky).toBe(false);
+  });
+
+  it("permite shiny/hundo/XXS/XXL para míticos con shiny en GO (ej. Darkrai)", () => {
+    const darkrai = resolveCheckEligibility({ isMythical: true, nationalDex: 491 });
+    expect(darkrai.isShiny).toBe(true);
+    expect(darkrai.isHundo).toBe(true);
+    expect(darkrai.isXXS).toBe(true);
+    expect(darkrai.isXXL).toBe(true);
+    // Aun así siguen sin poder intercambiarse ni tener megas/gmax/shadow
+    expect(darkrai.isLucky).toBe(false);
+    expect(darkrai.isMega).toBe(false);
+    expect(darkrai.isGmax).toBe(false);
+    expect(darkrai.isShadow).toBe(false);
+  });
 });

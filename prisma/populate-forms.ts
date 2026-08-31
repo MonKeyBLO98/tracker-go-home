@@ -222,13 +222,13 @@ async function main() {
       const form = await prisma.pokemonForm.upsert({
         where: { pokemonId_formName: { pokemonId: unown.id, formName } },
         update: {
-          isRegional: false,
+          isRegional: true,
           isCostume: false,
         },
         create: {
           pokemonId: unown.id,
           formName,
-          isRegional: false,
+          isRegional: true,
           isCostume: false,
         },
       });
@@ -252,28 +252,212 @@ async function main() {
     }
   }
 
-  // Special handling for Burmy (412) - forms based on cloak
+  // Special handling for Spinda (327) - GO patterns 1 to 9 (PokéAPI doesn't expose them as varieties)
+  console.log("\n=== Adding Spinda GO patterns ===");
+  const spinda = await prisma.pokemon.findUnique({ where: { nationalDex: 327 } });
+  if (spinda) {
+    const spindaPatterns = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    for (const pattern of spindaPatterns) {
+      const formName = `Pattern ${pattern}`;
+      const spriteUrl = `https://img.pokemondb.net/sprites/go/normal/1x/spinda-${pattern.toString().padStart(2, "0")}.png`;
+      const form = await prisma.pokemonForm.upsert({
+        where: { pokemonId_formName: { pokemonId: spinda.id, formName } },
+        update: {
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+        create: {
+          pokemonId: spinda.id,
+          formName,
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+
+      // Add abilities for Spinda patterns
+      for (const abilityName of ["own-tempo", "tangled-feet", "contrary"]) {
+        await prisma.pokemonFormAbility.upsert({
+          where: { formId_abilityName: { formId: form.id, abilityName } },
+          update: { isHidden: abilityName === "contrary" },
+          create: { formId: form.id, abilityName, isHidden: abilityName === "contrary" },
+        });
+      }
+
+      // Add Normal type
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: form.id, slot: 1 } },
+        update: { typeName: "normal" },
+        create: { formId: form.id, typeName: "normal", slot: 1 },
+      });
+
+      totalForms++;
+      console.log(`  #327 spinda -> ${formName}`);
+    }
+  }
+
+  // Special handling for Castform (351) - GO weather forms
+  console.log("\n=== Adding Castform weather forms ===");
+  const castform = await prisma.pokemon.findUnique({ where: { nationalDex: 351 } });
+  if (castform) {
+    const castformForms = [
+      { suffix: "Sunny", type: "fire", sprite: "castform-sunny" },
+      { suffix: "Rainy", type: "water", sprite: "castform-rainy" },
+      { suffix: "Snowy", type: "ice", sprite: "castform-snowy" },
+    ];
+
+    for (const formData of castformForms) {
+      const formName = formData.suffix;
+      const spriteUrl = `https://img.pokemondb.net/sprites/go/normal/1x/${formData.sprite}.png`;
+      const form = await prisma.pokemonForm.upsert({
+        where: { pokemonId_formName: { pokemonId: castform.id, formName } },
+        update: {
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+        create: {
+          pokemonId: castform.id,
+          formName,
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+
+      // Add Forecast ability for Castform forms
+      await prisma.pokemonFormAbility.upsert({
+        where: { formId_abilityName: { formId: form.id, abilityName: "forecast" } },
+        update: { isHidden: false },
+        create: { formId: form.id, abilityName: "forecast", isHidden: false },
+      });
+
+      // Add the weather type
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: form.id, slot: 1 } },
+        update: { typeName: formData.type },
+        create: { formId: form.id, typeName: formData.type, slot: 1 },
+      });
+
+      totalForms++;
+      console.log(`  #351 castform -> ${formName}`);
+    }
+  }
+
+  // Special handling for Deoxys (386) - GO forms (Attack, Defense, Speed; Normal is the base Pokémon)
+  console.log("\n=== Adding Deoxys GO forms ===");
+  const deoxys = await prisma.pokemon.findUnique({ where: { nationalDex: 386 } });
+  if (deoxys) {
+    const deoxysForms = [
+      { suffix: "Deoxys Attack", sprite: "deoxys-attack" },
+      { suffix: "Deoxys Defense", sprite: "deoxys-defense" },
+      { suffix: "Deoxys Speed", sprite: "deoxys-speed" },
+    ];
+
+    for (const formData of deoxysForms) {
+      const formName = formData.suffix;
+      const spriteUrl = `https://img.pokemondb.net/sprites/go/normal/1x/${formData.sprite}.png`;
+      const form = await prisma.pokemonForm.upsert({
+        where: { pokemonId_formName: { pokemonId: deoxys.id, formName } },
+        update: {
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+        create: {
+          pokemonId: deoxys.id,
+          formName,
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+
+      // Add Pressure ability for Deoxys forms
+      await prisma.pokemonFormAbility.upsert({
+        where: { formId_abilityName: { formId: form.id, abilityName: "pressure" } },
+        update: { isHidden: false },
+        create: { formId: form.id, abilityName: "pressure", isHidden: false },
+      });
+
+      // Add Psychic type
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: form.id, slot: 1 } },
+        update: { typeName: "psychic" },
+        create: { formId: form.id, typeName: "psychic", slot: 1 },
+      });
+
+      totalForms++;
+      console.log(`  #386 deoxys -> ${formName}`);
+    }
+  }
+
+  // Special handling for Cherrim (421) - GO Sunshine form (Overcast is the base Pokémon)
+  console.log("\n=== Adding Cherrim Sunshine form ===");
+  const cherrim = await prisma.pokemon.findUnique({ where: { nationalDex: 421 } });
+  if (cherrim) {
+    const spriteUrl = "https://img.pokemondb.net/sprites/go/normal/1x/cherrim-sunshine.png";
+    const form = await prisma.pokemonForm.upsert({
+      where: { pokemonId_formName: { pokemonId: cherrim.id, formName: "Sunshine" } },
+      update: {
+        spriteUrl,
+        isRegional: true,
+        isCostume: false,
+      },
+      create: {
+        pokemonId: cherrim.id,
+        formName: "Sunshine",
+        spriteUrl,
+        isRegional: true,
+        isCostume: false,
+      },
+    });
+
+    // Add Flower Gift ability for Cherrim Sunshine
+    await prisma.pokemonFormAbility.upsert({
+      where: { formId_abilityName: { formId: form.id, abilityName: "flower-gift" } },
+      update: { isHidden: false },
+      create: { formId: form.id, abilityName: "flower-gift", isHidden: false },
+    });
+
+    // Add Grass type
+    await prisma.pokemonFormType.upsert({
+      where: { formId_slot: { formId: form.id, slot: 1 } },
+      update: { typeName: "grass" },
+      create: { formId: form.id, typeName: "grass", slot: 1 },
+    });
+
+    totalForms++;
+    console.log(`  #421 cherrim -> Sunshine`);
+  }
+
+  // Special handling for Burmy (412) - GO cloak forms
   console.log("\n=== Adding Burmy cloak forms ===");
   const burmy = await prisma.pokemon.findUnique({ where: { nationalDex: 412 } });
   if (burmy) {
     const burmyForms = [
-      { suffix: "Plant Cloak", name: "burmy-plant", types: ["bug"], abilities: ["shed-skin", "overcoat"] },
-      { suffix: "Sandy Cloak", name: "burmy-sandy", types: ["bug"], abilities: ["shed-skin", "overcoat"] },
-      { suffix: "Trash Cloak", name: "burmy-trash", types: ["bug"], abilities: ["shed-skin", "overcoat"] },
+      { formName: "Plant Cloak", sprite: "burmy-plant", types: ["bug"], abilities: ["shed-skin", "overcoat"] },
+      { formName: "Sandy Cloak", sprite: "burmy-sandy", types: ["bug"], abilities: ["shed-skin", "overcoat"] },
+      { formName: "Trash Cloak", sprite: "burmy-trash", types: ["bug"], abilities: ["shed-skin", "overcoat"] },
     ];
 
     for (const formData of burmyForms) {
-      const formName = formData.suffix;
+      const formName = formData.formName;
+      const spriteUrl = `https://img.pokemondb.net/sprites/go/normal/1x/${formData.sprite}.png`;
       const form = await prisma.pokemonForm.upsert({
         where: { pokemonId_formName: { pokemonId: burmy.id, formName } },
         update: {
-          isRegional: false,
+          spriteUrl,
+          isRegional: true,
           isCostume: false,
         },
         create: {
           pokemonId: burmy.id,
           formName,
-          isRegional: false,
+          spriteUrl,
+          isRegional: true,
           isCostume: false,
         },
       });
@@ -299,48 +483,73 @@ async function main() {
     }
   }
 
-  // Add missing Wormadam Plant form (413)
-  console.log("\n=== Adding Wormadam Plant form ===");
+  // Special handling for Wormadam (413) - GO cloak forms (Plant = base Pokémon)
+  console.log("\n=== Adding Wormadam cloak forms ===");
   const wormadam = await prisma.pokemon.findUnique({ where: { nationalDex: 413 } });
   if (wormadam) {
-    const formName = "Plant Cloak";
-    const form = await prisma.pokemonForm.upsert({
-      where: { pokemonId_formName: { pokemonId: wormadam.id, formName } },
-      update: {
-        isRegional: false,
-        isCostume: false,
-      },
-      create: {
-        pokemonId: wormadam.id,
-        formName,
-        isRegional: false,
-        isCostume: false,
-      },
-    });
-
-    // Add abilities for Wormadam Plant
-    for (const abilityName of ["anticipation", "overcoat"]) {
-      await prisma.pokemonFormAbility.upsert({
-        where: { formId_abilityName: { formId: form.id, abilityName } },
-        update: { isHidden: abilityName === "overcoat" },
-        create: { formId: form.id, abilityName, isHidden: abilityName === "overcoat" },
+    // Rename old PokeAPI-named forms to cloak names (preserves formId + goFormEntry rows)
+    const renames = [
+      { oldName: "Wormadam Sandy", newName: "Sandy Cloak" },
+      { oldName: "Wormadam Trash", newName: "Trash Cloak" },
+    ];
+    for (const r of renames) {
+      const existing = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: wormadam.id, formName: r.oldName } },
       });
+      if (existing) {
+        await prisma.pokemonForm.update({
+          where: { id: existing.id },
+          data: { formName: r.newName },
+        });
+      }
     }
 
-    // Add types: Bug/Grass
-    await prisma.pokemonFormType.upsert({
-      where: { formId_slot: { formId: form.id, slot: 1 } },
-      update: { typeName: "bug" },
-      create: { formId: form.id, typeName: "bug", slot: 1 },
-    });
-    await prisma.pokemonFormType.upsert({
-      where: { formId_slot: { formId: form.id, slot: 2 } },
-      update: { typeName: "grass" },
-      create: { formId: form.id, typeName: "grass", slot: 2 },
-    });
+    const wormadamForms = [
+      { formName: "Plant Cloak", sprite: "wormadam-plant", types: ["bug", "grass"], abilities: ["anticipation", "overcoat"] },
+      { formName: "Sandy Cloak", sprite: "wormadam-sandy", types: ["bug", "ground"], abilities: ["anticipation", "overcoat"] },
+      { formName: "Trash Cloak", sprite: "wormadam-trash", types: ["bug", "steel"], abilities: ["anticipation", "overcoat"] },
+    ];
 
-    totalForms++;
-    console.log(`  #413 wormadam -> ${formName}`);
+    for (const formData of wormadamForms) {
+      const formName = formData.formName;
+      const spriteUrl = `https://img.pokemondb.net/sprites/go/normal/1x/${formData.sprite}.png`;
+      const form = await prisma.pokemonForm.upsert({
+        where: { pokemonId_formName: { pokemonId: wormadam.id, formName } },
+        update: {
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+        create: {
+          pokemonId: wormadam.id,
+          formName,
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+
+      // Add abilities for Wormadam forms
+      for (const abilityName of formData.abilities) {
+        await prisma.pokemonFormAbility.upsert({
+          where: { formId_abilityName: { formId: form.id, abilityName } },
+          update: { isHidden: abilityName === "overcoat" },
+          create: { formId: form.id, abilityName, isHidden: abilityName === "overcoat" },
+        });
+      }
+
+      // Add types (slots 1/2)
+      for (let i = 0; i < formData.types.length; i++) {
+        await prisma.pokemonFormType.upsert({
+          where: { formId_slot: { formId: form.id, slot: i + 1 } },
+          update: { typeName: formData.types[i] },
+          create: { formId: form.id, typeName: formData.types[i], slot: i + 1 },
+        });
+      }
+
+      totalForms++;
+      console.log(`  #413 wormadam -> ${formName}`);
+    }
   }
 
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);

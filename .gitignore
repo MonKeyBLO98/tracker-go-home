@@ -38,3 +38,6 @@ totem-results.txt
 
 # logs de servidor/desarrollo
 *.log
+
+.vercel
+.env*

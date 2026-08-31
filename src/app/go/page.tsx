@@ -554,13 +554,13 @@ export default function GoPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className={`flex flex-wrap gap-1 ${!entry.isCaptured ? 'opacity-30 pointer-events-none' : ''}`}>
+                        <div className={`flex flex-nowrap gap-1 ${!entry.isCaptured ? 'opacity-30 pointer-events-none' : ''}`}>
                           {GO_CHECKS.map((check) => {
                             if (check.name === "isMega") {
                               const megaCount = entry.megaForms.length;
                               if (megaCount === 0) {
                                 return (
-                                  <div key="isMega" className="invisible">
+                                  <div key="isMega" className="hidden">
                                     <GoCheckToggle
                                       pokemonNationalDex={entry.nationalDex}
                                       checkName="isMegaX"
@@ -626,7 +626,7 @@ export default function GoPage() {
                             return (
                               <div
                                 key={check.name}
-                                className={eligibility[check.name] ? undefined : "invisible"}
+                                className={eligibility[check.name] ? undefined : "hidden"}
                               >
                               <GoCheckToggle
                                 pokemonNationalDex={entry.nationalDex}
