@@ -105,7 +105,7 @@ export async function getChartsData(userId?: number | null): Promise<ChartsData>
     { label: "Purified", value: purified },
   ];
 
-  const homeGames: HomeGameSlice[] = games.map((game) => ({
+  const homeGames: HomeGameSlice[] = games.filter(g => g.gameKey !== "megadex").map((game) => ({
     gameKey: game.gameKey,
     gameName: game.gameName,
     totalSpecies: game.totalSpecies,

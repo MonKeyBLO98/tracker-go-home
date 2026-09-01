@@ -23,7 +23,7 @@ export default function MiniDexPage() {
   const fetchGames = useCallback(async () => {
     try {
       const result = await getMiniDexGames();
-      setGames(result);
+      setGames(result.filter(g => g.gameKey !== "megadex"));
       return result;
     } catch (error) {
       console.error("Error fetching mini dex games:", error);

@@ -145,7 +145,7 @@ export default function HomePage() {
   const fetchGameProgress = useCallback(async () => {
     try {
       const result = await getHomeGameProgress(activeProfileId);
-      setGameProgress(result);
+      setGameProgress(result.filter(g => g.gameKey !== "megadex"));
     } catch (error) {
       console.error("Error fetching game progress:", error);
     } finally {
