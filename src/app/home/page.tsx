@@ -680,7 +680,13 @@ export default function HomePage() {
                                 />
                               </TableCell>
                               <TableCell className="text-center">
-                                <GenderInfo genderRate={entry.genderRate} />
+                                {/female/i.test(form.formName) ? (
+                                  <span aria-label="Solo hembra" className="text-sm leading-none font-medium text-red-500">♀</span>
+                                ) : /male/i.test(form.formName) ? (
+                                  <span aria-label="Solo macho" className="text-sm leading-none font-medium text-blue-500">♂</span>
+                                ) : (
+                                  <GenderInfo genderRate={entry.genderRate} />
+                                )}
                               </TableCell>
                               {form.isRegional ? (
                                 <TableCell onClick={(e) => e.stopPropagation()} className="text-center">
