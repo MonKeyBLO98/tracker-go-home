@@ -730,7 +730,25 @@ export default function GoPage() {
                           />
                         </TableCell>
                         <TableCell className="text-center text-muted-foreground text-xs">
-                          =
+                          {/female/i.test(rf.formName) ? (
+                            <span
+                              className="text-red-500 font-bold"
+                              title="Hembra"
+                              aria-label="Hembra"
+                            >
+                              ♀
+                            </span>
+                          ) : /male/i.test(rf.formName) ? (
+                            <span
+                              className="text-blue-500 font-bold"
+                              title="Macho"
+                              aria-label="Macho"
+                            >
+                              ♂
+                            </span>
+                          ) : (
+                            "="
+                          )}
                         </TableCell>
                         <TableCell>
                           {rf.isCaptured ? (
