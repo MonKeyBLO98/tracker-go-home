@@ -801,6 +801,30 @@ async function main() {
     }
   }
 
+  // Special handling for Enamorus (905) - GO form Tótem/Therian.
+  console.log("\n=== Ensuring Enamorus Therian form ===");
+  const enamorus = await prisma.pokemon.findUnique({ where: { nationalDex: 905 } });
+  if (enamorus) {
+    const therian = await prisma.pokemonForm.findUnique({
+      where: { pokemonId_formName: { pokemonId: enamorus.id, formName: "Enamorus Therian" } },
+    });
+    if (therian) {
+      const tTarget = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: enamorus.id, formName: "Tótem" } },
+      });
+      if (tTarget) {
+        await prisma.pokemonForm.update({ where: { id: therian.id }, data: { isRegional: true } });
+      } else {
+        await prisma.pokemonForm.update({
+          where: { id: therian.id },
+          data: { formName: "Tótem", isRegional: true, isCostume: false },
+        });
+        totalForms++;
+        console.log("  #905 enamorus -> Tótem (isRegional)");
+      }
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
