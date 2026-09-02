@@ -611,6 +611,31 @@ async function main() {
     }
   }
 
+  // Special handling for Hoopa (720) - GO "Unbound" form.
+  // PokéAPI la registra como variedad con sprite propio; se marca isRegional
+  // para que se muestre como forma en la página /go.
+  console.log("\n=== Ensuring Hoopa Unbound form ===");
+  const hoopa = await prisma.pokemon.findUnique({ where: { nationalDex: 720 } });
+  if (hoopa) {
+    const unbound = await prisma.pokemonForm.upsert({
+      where: { pokemonId_formName: { pokemonId: hoopa.id, formName: "Unbound" } },
+      update: {
+        spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10086.png",
+        isRegional: true,
+        isCostume: false,
+      },
+      create: {
+        pokemonId: hoopa.id,
+        formName: "Unbound",
+        spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10086.png",
+        isRegional: true,
+        isCostume: false,
+      },
+    });
+    totalForms++;
+    console.log(`  #720 hoopa -> ${unbound.formName} (isRegional)`);
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
