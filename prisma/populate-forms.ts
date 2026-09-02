@@ -697,6 +697,24 @@ async function main() {
     }
   }
 
+  // Special handling for Necrozma (800) - GO forms (Dawn, Dusk, Ultra).
+  // Se marcan isRegional para que se muestren en /go.
+  console.log("\n=== Ensuring Necrozma forms ===");
+  const necrozma = await prisma.pokemon.findUnique({ where: { nationalDex: 800 } });
+  if (necrozma) {
+    const necrozmaForms = await prisma.pokemonForm.findMany({
+      where: { pokemonId: necrozma.id },
+    });
+    for (const f of necrozmaForms) {
+      await prisma.pokemonForm.update({
+        where: { id: f.id },
+        data: { isRegional: true, isCostume: false },
+      });
+      totalForms++;
+      console.log(`  #800 necrozma -> ${f.formName} (isRegional)`);
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
