@@ -667,6 +667,36 @@ async function main() {
     }
   }
 
+  // Special handling for Lycanroc (745) - GO forms (Dusk, Midnight).
+  // La forma Midday es el sprite base; Dusk/Midnight se marcan isRegional para /go.
+  console.log("\n=== Ensuring Lycanroc forms ===");
+  const lycanroc = await prisma.pokemon.findUnique({ where: { nationalDex: 745 } });
+  if (lycanroc) {
+    const lycanrocRenames = [
+      { old: "Lycanroc Dusk", new: "Dusk" },
+      { old: "Lycanroc Midnight", new: "Midnight" },
+    ];
+    for (const r of lycanrocRenames) {
+      const existing = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: lycanroc.id, formName: r.old } },
+      });
+      if (!existing) continue;
+      const targetExists = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: lycanroc.id, formName: r.new } },
+      });
+      if (targetExists) {
+        await prisma.pokemonForm.update({ where: { id: existing.id }, data: { isRegional: true } });
+      } else {
+        await prisma.pokemonForm.update({
+          where: { id: existing.id },
+          data: { formName: r.new, isRegional: true, isCostume: false },
+        });
+        totalForms++;
+        console.log(`  #745 lycanroc -> ${r.new} (isRegional)`);
+      }
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
