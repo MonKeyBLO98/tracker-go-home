@@ -6,6 +6,11 @@ export interface CheckEligibilityInput {
   hasShadow?: boolean | null;
 }
 
+// Especies que no registran ningún check en Pokémon GO (se obtienen solo por
+// Investigación Especial / mecánicas especiales, sin shiny, hundo, lucky, etc.).
+// Zygarde (718) entra por Investigación Especial → sin checks (solo formas 10/50/Complete).
+const NO_CHECKS_SPECIES = new Set<number>([718]);
+
 // Míticos cuyo Shiny SÍ está disponible en Pokémon GO.
 // Por defecto los míticos no tienen shiny (se obtienen solo por Investigación Especial),
 // pero algunos se consiguen vía incursiones/Masterwork y sí tienen shiny.
@@ -35,6 +40,23 @@ const MYTHICALS_WITH_SHINY = new Set<number>([
 export function resolveCheckEligibility(
   input: CheckEligibilityInput
 ): Record<string, boolean> {
+  if (
+    input.nationalDex !== null &&
+    input.nationalDex !== undefined &&
+    NO_CHECKS_SPECIES.has(input.nationalDex)
+  ) {
+    return {
+      isShiny: false,
+      isHundo: false,
+      isXXL: false,
+      isXXS: false,
+      isLucky: false,
+      isMega: false,
+      isGmax: false,
+      isShadow: false,
+      isPurified: false,
+    };
+  }
   if (input.isMythical) {
     const hasShiny = input.nationalDex !== null && input.nationalDex !== undefined
       ? MYTHICALS_WITH_SHINY.has(input.nationalDex)

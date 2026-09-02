@@ -22,6 +22,16 @@ vi.mock("@/lib/prisma", () => ({
       count: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      findMany: vi.fn(),
+    },
+    goFormEntry: {
+      count: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    pokemonForm: {
+      findMany: vi.fn().mockResolvedValue([]),
     },
   },
 }));
@@ -318,17 +328,26 @@ describe("getGoStats", () => {
       .mockResolvedValueOnce(457);
     // goEntry.count: capturados
     mockPrisma.goEntry.count.mockResolvedValueOnce(100);
-    // goCheck.count: shiny, lucky, hundo, xxl, xxs, mega, gmax, shadow, purified
-    mockPrisma.goCheck.count
-      .mockResolvedValueOnce(12)
-      .mockResolvedValueOnce(5)
-      .mockResolvedValueOnce(8)
-      .mockResolvedValueOnce(3)
-      .mockResolvedValueOnce(2)
-      .mockResolvedValueOnce(4)
-      .mockResolvedValueOnce(6)
-      .mockResolvedValueOnce(9)
-      .mockResolvedValueOnce(7);
+    // pokemonForm.findMany (formas sin shiny, p. ej. Zygarde): ninguna
+    mockPrisma.pokemonForm.findMany.mockResolvedValueOnce([]);
+    // goCheck.findMany: shiny=12, lucky=5, hundo=8, xxl=3, xxs=2, mega=4, gmax=6, shadow=9, purified=7
+    const rows = Array.from({ length: 12 }, (_, i) => ({
+      isShiny: i < 12,
+      isLucky: i < 5,
+      isHundo: i < 8,
+      isXXL: i < 3,
+      isXXS: i < 2,
+      isMegaX: i < 4,
+      isMegaY: false,
+      isGmax: i < 6,
+      isShadow: i < 9,
+      isPurified: i < 7,
+    }));
+    mockPrisma.goCheck.findMany.mockResolvedValueOnce(rows);
+    // goFormEntry.count: capturados=0, shiny=0
+    mockPrisma.goFormEntry.count
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(0);
 
     const result = await getGoStats(1);
 

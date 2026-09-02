@@ -6,6 +6,10 @@ import { resolveUserId } from "@/lib/profile";
 import { resolveCheckEligibility } from "@/lib/check-eligibility";
 import { getGoReferenceTotals } from "@/lib/reference-cache";
 
+// Especies cuyas formas no deben sumarse al conteo de stats shiny en GO
+// (p. ej. Zygarde, obtenida por Investigación Especial).
+const NO_STATS_SHINY_DEX = new Set<number>([718]);
+
 export type GoGenderValue = "male" | "female" | "both" | "genderless";
 
 export interface PokemonGoRow {
@@ -548,6 +552,14 @@ export interface GoStatsSummary {
 export async function getGoStats(userId?: number | null): Promise<GoStatsSummary> {
   const uid = await resolveUserId(userId);
 
+  // Formas de especies sin shiny (p. ej. Zygarde) → se excluyen del conteo.
+  const noStatsShinyFormIds = await prisma.pokemonForm.findMany({
+    where: { pokemon: { nationalDex: { in: [...NO_STATS_SHINY_DEX] } } },
+    select: { id: true },
+  });
+
+  const excludedFormIds = noStatsShinyFormIds.map((f) => f.id);
+
   const [
     totals,
     captured,
@@ -573,7 +585,13 @@ export async function getGoStats(userId?: number | null): Promise<GoStatsSummary
       },
     }),
     prisma.goFormEntry.count({ where: { userId: uid, isCaptured: true } }),
-    prisma.goFormEntry.count({ where: { userId: uid, isShiny: true } }),
+    prisma.goFormEntry.count({
+      where: {
+        userId: uid,
+        isShiny: true,
+        ...(excludedFormIds.length > 0 ? { formId: { notIn: excludedFormIds } } : {}),
+      },
+    }),
   ]);
 
   let lucky = 0;

@@ -497,10 +497,15 @@ async function main() {
         where: { pokemonId_formName: { pokemonId: wormadam.id, formName: r.oldName } },
       });
       if (existing) {
-        await prisma.pokemonForm.update({
-          where: { id: existing.id },
-          data: { formName: r.newName },
+        const targetExists = await prisma.pokemonForm.findUnique({
+          where: { pokemonId_formName: { pokemonId: wormadam.id, formName: r.newName } },
         });
+        if (!targetExists) {
+          await prisma.pokemonForm.update({
+            where: { id: existing.id },
+            data: { formName: r.newName },
+          });
+        }
       }
     }
 
@@ -549,6 +554,60 @@ async function main() {
 
       totalForms++;
       console.log(`  #413 wormadam -> ${formName}`);
+    }
+  }
+
+  // Special handling for Zygarde (718) - GO forms (10%, 50%, Complete).
+  // PokéAPI expone varias variedades con sprites nulos; se registran manualmente
+  // como isRegional para que se muestren en la página /go.
+  console.log("\n=== Adding Zygarde forms ===");
+  const zygarde = await prisma.pokemon.findUnique({ where: { nationalDex: 718 } });
+  if (zygarde) {
+    const zygardeForms = [
+      { formName: "10%", sprite: "10181" },
+      { formName: "50%", sprite: "718" },
+      { formName: "Complete", sprite: "10120" },
+    ];
+
+    for (const formData of zygardeForms) {
+      const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${formData.sprite}.png`;
+      const form = await prisma.pokemonForm.upsert({
+        where: { pokemonId_formName: { pokemonId: zygarde.id, formName: formData.formName } },
+        update: {
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+        create: {
+          pokemonId: zygarde.id,
+          formName: formData.formName,
+          spriteUrl,
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+
+      // Aura Veil ability for Zygarde forms
+      await prisma.pokemonFormAbility.upsert({
+        where: { formId_abilityName: { formId: form.id, abilityName: "aura-veil" } },
+        update: { isHidden: true },
+        create: { formId: form.id, abilityName: "aura-veil", isHidden: true },
+      });
+
+      // Dragon + Ground types
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: form.id, slot: 1 } },
+        update: { typeName: "dragon" },
+        create: { formId: form.id, typeName: "dragon", slot: 1 },
+      });
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: form.id, slot: 2 } },
+        update: { typeName: "ground" },
+        create: { formId: form.id, typeName: "ground", slot: 2 },
+      });
+
+      totalForms++;
+      console.log(`  #718 zygarde -> ${formData.formName}`);
     }
   }
 

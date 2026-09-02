@@ -751,7 +751,9 @@ export default function GoPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {rf.isCaptured ? (
+                          {entry.nationalDex === 718 ? (
+                            <span className="text-muted-foreground text-xs">-</span>
+                          ) : rf.isCaptured ? (
                             <div className="flex items-center gap-1">
                               <Switch
                                 checked={rf.isShiny}
