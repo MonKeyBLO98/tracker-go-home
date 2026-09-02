@@ -636,6 +636,37 @@ async function main() {
     console.log(`  #720 hoopa -> ${unbound.formName} (isRegional)`);
   }
 
+  // Special handling for Oricorio (741) - GO forms (Pom Pom, Pau, Sensu).
+  // Se renombran a nombres simples y se marcan isRegional para /go.
+  console.log("\n=== Ensuring Oricorio forms ===");
+  const oricorio = await prisma.pokemon.findUnique({ where: { nationalDex: 741 } });
+  if (oricorio) {
+    const oricorioRenames = [
+      { old: "Oricorio Pom Pom", new: "Pom Pom" },
+      { old: "Oricorio Pau", new: "Pau" },
+      { old: "Oricorio Sensu", new: "Sensu" },
+    ];
+    for (const r of oricorioRenames) {
+      const existing = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: oricorio.id, formName: r.old } },
+      });
+      if (!existing) continue;
+      const targetExists = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: oricorio.id, formName: r.new } },
+      });
+      if (targetExists) {
+        await prisma.pokemonForm.update({ where: { id: existing.id }, data: { isRegional: true } });
+      } else {
+        await prisma.pokemonForm.update({
+          where: { id: existing.id },
+          data: { formName: r.new, isRegional: true, isCostume: false },
+        });
+        totalForms++;
+        console.log(`  #741 oricorio -> ${r.new} (isRegional)`);
+      }
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
