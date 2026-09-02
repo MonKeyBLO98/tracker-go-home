@@ -715,6 +715,37 @@ async function main() {
     }
   }
 
+  // Special handling for Sinistea (854) & Polteageist (855) - GO forms
+  // (Falsificado/Phony, Genuino/Antique). Se renombran y marcan isRegional para /go.
+  console.log("\n=== Ensuring Sinistea/Polteageist forms ===");
+  const teaRenames = [
+    { nd: 854, old: "Phony", new: "Falsificado" },
+    { nd: 854, old: "Antique", new: "Genuino" },
+    { nd: 855, old: "Phony", new: "Falsificado" },
+    { nd: 855, old: "Antique", new: "Genuino" },
+  ];
+  for (const r of teaRenames) {
+    const mon = await prisma.pokemon.findUnique({ where: { nationalDex: r.nd } });
+    if (!mon) continue;
+    const existing = await prisma.pokemonForm.findUnique({
+      where: { pokemonId_formName: { pokemonId: mon.id, formName: r.old } },
+    });
+    if (!existing) continue;
+    const target = await prisma.pokemonForm.findUnique({
+      where: { pokemonId_formName: { pokemonId: mon.id, formName: r.new } },
+    });
+    if (target) {
+      await prisma.pokemonForm.update({ where: { id: existing.id }, data: { isRegional: true } });
+    } else {
+      await prisma.pokemonForm.update({
+        where: { id: existing.id },
+        data: { formName: r.new, isRegional: true, isCostume: false },
+      });
+      totalForms++;
+      console.log(`  #${r.nd} -> ${r.new} (isRegional)`);
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
