@@ -746,6 +746,61 @@ async function main() {
     }
   }
 
+  // Special handling for Indeedee (876) - GO forms (Macho/Hembra).
+  // La forma default es Macho; se registran ambas como isRegional para /go.
+  console.log("\n=== Ensuring Indeedee forms ===");
+  const indeedee = await prisma.pokemon.findUnique({ where: { nationalDex: 876 } });
+  if (indeedee) {
+    // Hembra
+    const female = await prisma.pokemonForm.findUnique({
+      where: { pokemonId_formName: { pokemonId: indeedee.id, formName: "Indeedee Female" } },
+    });
+    if (female) {
+      const fTarget = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: indeedee.id, formName: "Hembra" } },
+      });
+      if (fTarget) {
+        await prisma.pokemonForm.update({ where: { id: female.id }, data: { isRegional: true } });
+      } else {
+        await prisma.pokemonForm.update({
+          where: { id: female.id },
+          data: { formName: "Hembra", isRegional: true, isCostume: false },
+        });
+        totalForms++;
+        console.log("  #876 indeedee -> Hembra (isRegional)");
+      }
+    }
+    // Macho
+    const male = await prisma.pokemonForm.findUnique({
+      where: { pokemonId_formName: { pokemonId: indeedee.id, formName: "Macho" } },
+    });
+    if (male) {
+      await prisma.pokemonForm.update({ where: { id: male.id }, data: { isRegional: true } });
+    } else {
+      const nuevo = await prisma.pokemonForm.create({
+        data: {
+          pokemonId: indeedee.id,
+          formName: "Macho",
+          spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/876.png",
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: nuevo.id, slot: 1 } },
+        update: { typeName: "psychic" },
+        create: { formId: nuevo.id, typeName: "psychic", slot: 1 },
+      });
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: nuevo.id, slot: 2 } },
+        update: { typeName: "normal" },
+        create: { formId: nuevo.id, typeName: "normal", slot: 2 },
+      });
+      totalForms++;
+      console.log("  #876 indeedee -> Macho (isRegional)");
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
