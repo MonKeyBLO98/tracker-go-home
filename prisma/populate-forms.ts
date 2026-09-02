@@ -825,6 +825,65 @@ async function main() {
     }
   }
 
+  // Special handling for Squawkabilly (931) - GO forms (Verde/Azul/Amarillo/Blanco).
+  console.log("\n=== Ensuring Squawkabilly forms ===");
+  const squawk = await prisma.pokemon.findUnique({ where: { nationalDex: 931 } });
+  if (squawk) {
+    const squawkRenames = [
+      { old: "Squawkabilly Blue Plumage", new: "Azul" },
+      { old: "Squawkabilly Yellow Plumage", new: "Amarillo" },
+      { old: "Squawkabilly White Plumage", new: "Blanco" },
+    ];
+    for (const r of squawkRenames) {
+      const existing = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: squawk.id, formName: r.old } },
+      });
+      if (!existing) continue;
+      const target = await prisma.pokemonForm.findUnique({
+        where: { pokemonId_formName: { pokemonId: squawk.id, formName: r.new } },
+      });
+      if (target) {
+        await prisma.pokemonForm.update({ where: { id: existing.id }, data: { isRegional: true } });
+      } else {
+        await prisma.pokemonForm.update({
+          where: { id: existing.id },
+          data: { formName: r.new, isRegional: true, isCostume: false },
+        });
+        totalForms++;
+        console.log(`  #931 squawk -> ${r.new} (isRegional)`);
+      }
+    }
+    // Verde (base)
+    const verde = await prisma.pokemonForm.findUnique({
+      where: { pokemonId_formName: { pokemonId: squawk.id, formName: "Verde" } },
+    });
+    if (verde) {
+      await prisma.pokemonForm.update({ where: { id: verde.id }, data: { isRegional: true } });
+    } else {
+      const nuevo = await prisma.pokemonForm.create({
+        data: {
+          pokemonId: squawk.id,
+          formName: "Verde",
+          spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/931.png",
+          isRegional: true,
+          isCostume: false,
+        },
+      });
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: nuevo.id, slot: 1 } },
+        update: { typeName: "normal" },
+        create: { formId: nuevo.id, typeName: "normal", slot: 1 },
+      });
+      await prisma.pokemonFormType.upsert({
+        where: { formId_slot: { formId: nuevo.id, slot: 2 } },
+        update: { typeName: "flying" },
+        create: { formId: nuevo.id, typeName: "flying", slot: 2 },
+      });
+      totalForms++;
+      console.log("  #931 squawk -> Verde (isRegional)");
+    }
+  }
+
   console.log(`\n✓ ${processed} Pokémon processed, ${totalForms} forms created`);
   console.log("\nUpdating Pokemon hasMega/hasGmax/hasShadow flags...");
   const forms = await prisma.pokemonForm.findMany({
